@@ -1,5 +1,5 @@
 from app import create_app, db
-from app.models import User
+from app.models import User, Task
 import os
 import click
 import sys
@@ -14,7 +14,7 @@ app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
 @app.shell_context_processor
 def make_shell_context():
-    return dict(db=db, User=User)
+    return dict(db=db, User=User, Task=Task)
 
 @app.cli.command()
 @click.option('--coverage/--n--coverage', default=False, help='Run tests under code coverage.')
