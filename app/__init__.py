@@ -34,6 +34,6 @@ def create_app(config_name):
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
     from .task_blueprint import task as task_blueprint
-    app.register_blueprint(task_blueprint)
+    app.register_blueprint(task_blueprint, url_prefix='/tasks')
 
     return app

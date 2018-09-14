@@ -1,0 +1,54 @@
+<table class="table">
+
+    {% for task in tasks %}
+    <tr>
+        <td>
+            <div {% if task.done %}style="text-decoration: line-through;" {% endif %}>
+                <h4>{{task.body}}</h4>
+            </div>
+        </td>
+        <td>
+            <div style="margin-top: 10px;">
+                {{ task.due.date().__format__('%d/%m/%Y') }}
+            </div>
+        </td>
+        <td>
+            <div style="margin-top: 10px;">
+                <a href="#">
+                    {{ task.author.username }}
+                </a>
+            </div>
+        </td>
+        <td>
+            <div style="margin-top: 10px;">
+                <a href="{{ url_for('task.home', task_id=task.id)}}">
+                    <span class="badge badge-info">Edit</span>
+                </a>
+            </div>
+        </td>
+
+        <td>
+            <div style="margin-top: 10px;">
+                {% if task.done %}
+                <span class="badge badge-secondary">Completed</span>
+                {% else %}
+                <a href="{{ url_for('task.complete', task_id=task.id)}}">
+                    <span class="badge badge-primary">Done</span>
+                </a>
+                {% endif %}
+            </div>
+
+        </td>
+        <td>
+
+            <div style="margin-top: 10px;">
+
+                <a href="{{ url_for('task.delete', task_id=task.id)}}">
+                    <span class="badge badge-danger">Delete</span>
+                </a>
+            </div>
+        </td>
+
+    </tr>
+    {% endfor %}
+</table>
