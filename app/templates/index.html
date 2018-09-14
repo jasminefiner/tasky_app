@@ -1,12 +1,5 @@
-{% extends "bootstrap/base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Tasky{% endblock%}
-
-{% block head %}
-{{ super() }}
-<link rel="stylesheet" href="{{ url_for('static', filename='fontawesome-5.2.0/css/all.css') }}" type="text/css">
-{% endblock %}
-
-{% block content %}
+{% block page_content %}
 <h1>Hello, World! <i class="fas fa-globe-americas"></h1></i>
 {% endblock %}
