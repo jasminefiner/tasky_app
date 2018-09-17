@@ -4,6 +4,21 @@ from flask_login import UserMixin
 from itsdangerous import JSONWebSignatureSerializer
 from werkzeug.security import generate_password_hash, check_password_hash
 
+class Project(UserMixin, db.Model):
+    __tablename__ = 'projects'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    author = db.relationship('User', foreign_keys=author_id, back_populates='projects')
+    tasks = db.relationship('Task', foreign_keys='Task.project_id', back_populates='project')
+
+    def __repr__(self):
+        return '<Project %r>' % self.name
+
+    def before_delete(self):
+        for task in self.tasks:
+            task.project = self.author.projects[0]
+
 class Task(UserMixin, db.Model):
     __tablename__ = 'tasks'
     id = db.Column(db.Integer, primary_key=True)
@@ -11,12 +26,17 @@ class Task(UserMixin, db.Model):
     due = db.Column(db.DateTime, index=True)
     done = db.Column(db.Boolean, default=False)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-
     author = db.relationship('User', foreign_keys=author_id, back_populates='tasks')
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
+    project = db.relationship('Project', foreign_keys=project_id, back_populates='tasks')
+
+    def __init__(self, **kwargs):
+        super(Task, self).__init__(**kwargs)
+        if self.project is None:
+            self.project = self.author.projects[0]
 
     def __repr__(self):
         return '<Task %r>' % self.id
-
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -26,6 +46,13 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(80))
     confirmed = db.Column(db.Boolean, default=False)
     tasks = db.relationship('Task', foreign_keys=Task.author_id, back_populates='author')
+    projects = db.relationship('Project', foreign_keys=Project.author_id, back_populates='author')
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        p = Project(name='Inbox', author=self)
+        self.projects.append(p)
+
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -105,3 +132,23 @@ class User(UserMixin, db.Model):
 @login_manager.user_loader
 def user_loader(user_id):
     return User.query.get(int(user_id))
+
+# @db.event.listens_for(Project, 'after_delete')
+# def project_delete_listener(mapper, connection, project):
+#     print(project.id)
+#     @db.event.listens_for(db.session, "after_flush")
+#     def receive_after_flush(session, context):
+#         print('it works')
+#         if len(project.tasks) != 0:
+#             for task in project.tasks:
+#                 print(task)
+#                 print(task.author.projects[0])
+#                 #task.project = task.author.projects[0]
+#                 db.attributes.set_committed_value(task, project, task.author.projects[0])
+#
+# @db.event.listens_for(User, 'after_delete')
+# def user_delete_listener(mapper, connection, target):
+#     for task in target.tasks:
+#         db.session.delete(task)
+#     for project in target.projects:
+#         db.session.delete(project)

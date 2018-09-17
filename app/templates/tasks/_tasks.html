@@ -3,8 +3,10 @@
     {% for task in tasks %}
     <tr>
         <td>
-            <div {% if task.done %}style="text-decoration: line-through;" {% endif %}>
-                <h4>{{task.body}}</h4>
+            <div style="margin-top: 10px;">
+                <span class="badge badge-success">{{ task.project.name }}</span>
+                    &nbsp;
+                    <span {% if task.done %}style="text-decoration: line-through;" {% endif %}>{{task.body}}</span>
             </div>
         </td>
         <td>

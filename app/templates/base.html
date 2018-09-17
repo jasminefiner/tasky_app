@@ -29,8 +29,6 @@
           Account
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Profile</a>
-          <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="{{url_for('auth.change_password')}}">Change Password</a>
           <a class="dropdown-item" href="{{ url_for('auth.email_change_request')}}">Change Email</a>
         </div>
@@ -54,6 +52,8 @@
     {% for category, message in get_flashed_messages(with_categories=True) %}
     <div class="alert alert-{{ category }}" role="alert">
         {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
     </div>
     {% endfor %}
     {% block page_content %}
